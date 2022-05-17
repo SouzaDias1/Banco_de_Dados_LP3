@@ -1,5 +1,4 @@
 using Microsoft.Data.Sqlite;
-
 namespace Banco_de_Dados_LP3.Database;
 
 class DatabaseSetup
@@ -10,7 +9,6 @@ class DatabaseSetup
         CreatTableComputer();
         CreatTableLab();
     }
-
 
     public void CreatTableComputer()
     {
