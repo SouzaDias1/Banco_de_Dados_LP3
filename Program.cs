@@ -1,21 +1,14 @@
-﻿using Microsoft.Data.Sqlite;
+﻿using Lanco_de_Dados_LP3.Database;
+using Banco_de_Dados_LP3.Models;
+using Banco_de_Dados_LP3.Repositories;
+using Microsoft.Data.Sqlite;
 
-var connection = new SqliteConnection("Data Source=database.db");
-connection.Open();
+var databaseConfig = new DatabaseConfig();
+var DatabaseSetup= new DatabaseSetup(databaseConfig);
 
-var command = connection.CreateCommand();
-command.CommandText = @"
-    CREATE TABLE IF NOT EXISTS Computers(
-        id int not null primary key,
-        ran varchar(100) not null,
-        processor varchar(100) not null
-    );
-";
-command.ExecuteNonQuery();
-connection.Close();
+var computerRepository = new ComputerRepository(databaseConfig);
 
-//Routing
-var modelName = args [0];
+var modelName = args[0];
 var modelAction = args[1];
 
 if(modelName == "Computer")
@@ -23,38 +16,76 @@ if(modelName == "Computer")
     if(modelAction == "List")
     {
         Console.WriteLine("Computer List");
-        connection = new SqliteConnection("Data Source=database.db");
-        connection.Open();
-        
-        command = connection.CreateCommand();
-        command.CommandText = "SELECT * FROM Computers;";
-        
-        var reader = command.ExecuteReader();
-       
-        while (reader.Read())
+        foreach (var computer in computerRepository.GetAll())
         {
-            Console.WriteLine("{0}, {1}, {2}", reader.GetInt32(0), reader.GetString(1), reader.GetString(2));
+            Console.WriteLine("{0}, {1}, {2}", computer.Id, computer.Ram, computer.Processador);
         }
-
-       reader.Close();
-        connection.Close();
     }
 
     if(modelAction == "New")
     {
-        int id = Convert.ToInt32(args[2]);
-        var ram = args[3];
-        var processor = args[4];
+        var connection = new SqliteConnection("Data Source=database.db");
+        connection.Open(); 
 
-        connection = new SqliteConnection("Data Source=database.db");
+        Console.WriteLine("New computer");
+        int id = Convert.ToInt32(args[2]);
+        string ram = args[3];
+        string processador = args[4];
+
+        var computer = new Computer(id,ram,processador);
+        computerRepository.Save(computer);
+    }
+    
+    if(modelAction == "Show")
+    {
+       int id = Convert.ToInt32(args[2]);
+       var computer = computerRepository.GetById(id);
+
+        Console.WriteLine("{0}, {1}, {2}", computer.Id, computer.Ram, computer.Processador);
+    }
+
+    if(modelAction == "Delete")
+    {
+       int id = Convert.ToInt32(args[2]);
+       computerRepository.Delete(id);
+    }
+
+    if(modelAction == "Update")
+    {
+        int id = Convert.ToInt32(args[2]);
+        string ram = args[3];
+        string processador = args[4];
+
+        var computer = new Computer(id, ram, processador);
+        computerRepository.Update(computer);   
+    }
+}
+
+if(modelName == "Lab")
+{
+    if(modelAction == "List")
+    {
+        
+    }
+
+    if(modelAction == "New")
+    {
+        var connection = new SqliteConnection("Data Source=database.db");
         connection.Open();
-        
-        command = connection.CreateCommand();
-        command.CommandText = "INSERT INTO Computers VALUES($id, $ram, $processor);";
+
+        Console.WriteLine("New lab");
+        int id = Convert.ToInt32(args[2]);
+        string num = args[3];
+        string nome = args[4];
+        string bloco = args[5];
+         
+        var command = connection.CreateCommand();
+        command.CommandText = "INSERT INTO Lab VALUES($id, $num,  $nome, $bloco);";
         command.Parameters.AddWithValue("$id", id);
-        command.Parameters.AddWithValue("$ram", ram);
-        command.Parameters.AddWithValue("$processor", processor);
-        
+        command.Parameters.AddWithValue("$num", num);
+        command.Parameters.AddWithValue("$nome", nome);
+        command.Parameters.AddWithValue("$bloco", bloco);
+
         command.ExecuteNonQuery();
         connection.Close();
     }
