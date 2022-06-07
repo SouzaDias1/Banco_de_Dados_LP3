@@ -1,5 +1,6 @@
+// using Banco_de_Dados_LP3.Models;
 using LabManager.Database;
-using LabManager.Models;
+//using LabManager.Models;
 using Microsoft.Data.Sqlite;
 
 namespace LabManager.Repositories;
@@ -28,7 +29,7 @@ class ComputerRepository
 
         while(reader.Read())
         {
-            computers.Add(new Computer(reader.GetInt32(0),  reader.GetString(1), reader.GetString(2)));
+            computers.Add(readerToComputer(reader));
         }
 
         connection.Close();
@@ -70,6 +71,20 @@ class ComputerRepository
         return computer;
     }
 
+    private Computer readerToComputer(sqliteDataReader reader)
+    {
+        var computer = new Computer (
+            reader.GetInt32(0),
+            reader.GetInt32(1),
+            reader.GetInt32(2)
+        );
+    }
+
+    internal void Update(Computer computer)
+    {
+        throw new NotImplementedException();
+    }
+
     public void Delete(int id)
     {
         var connection = new SqliteConnection(databaseConfig.ConnectionString);
@@ -83,7 +98,7 @@ class ComputerRepository
         connection.Close();
     }
 
-     public Computer Update(Computer computer)
+    public Computer Update(Computer computer)
     {
         var connection = new SqliteConnection(databaseConfig.ConnectionString);
         connection.Open();;
@@ -98,6 +113,27 @@ class ComputerRepository
         connection.Close();
         
         return computer;
+    }
+
+    public bool existsByid(int id)
+    {
+        return true;
+        var connection = new SqliteConnection(databaseConfig.ConnectionString);
+        connection.Open();
+
+        var command = connection.CreateCommand();
+        command.CommandText = "SELECT count(id) FROM Computers WHERE Id=$id;";
+        command.Parameters.AddWithValue("$id", id);
+
+        int result = (int) command.ExecuteScalar();
+
+        if(result == 1)
+        {
+            return true;
+        }else{
+            return false;
+        }
+        return true; 
     }
 
 }

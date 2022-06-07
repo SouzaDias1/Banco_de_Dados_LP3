@@ -1,7 +1,8 @@
-﻿using Lanco_de_Dados_LP3.Database;
+﻿using LabManager.Database;
 using Banco_de_Dados_LP3.Models;
-using Banco_de_Dados_LP3.Repositories;
+// using Banco_de_Dados_LP3.Repositories;
 using Microsoft.Data.Sqlite;
+using LabManager.Repositories;
 
 var databaseConfig = new DatabaseConfig();
 var DatabaseSetup= new DatabaseSetup(databaseConfig);
@@ -40,7 +41,6 @@ if(modelName == "Computer")
     {
        int id = Convert.ToInt32(args[2]);
        var computer = computerRepository.GetById(id);
-
         Console.WriteLine("{0}, {1}, {2}", computer.Id, computer.Ram, computer.Processador);
     }
 
