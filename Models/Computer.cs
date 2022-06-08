@@ -1,6 +1,4 @@
-es (13 sloc)  313 Bytes
-   
-// namespace Banco_de_Dados_LP3.Models;
+namespace LabManager.Models;
 
 class Computer
 {

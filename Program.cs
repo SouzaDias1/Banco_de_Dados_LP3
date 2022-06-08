@@ -1,8 +1,7 @@
 ﻿using LabManager.Database;
-using Banco_de_Dados_LP3.Models;
-// using Banco_de_Dados_LP3.Repositories;
-using Microsoft.Data.Sqlite;
+using LabManager.Models;
 using LabManager.Repositories;
+using Microsoft.Data.Sqlite;
 
 var databaseConfig = new DatabaseConfig();
 var DatabaseSetup= new DatabaseSetup(databaseConfig);
@@ -28,7 +27,7 @@ if(modelName == "Computer")
         var connection = new SqliteConnection("Data Source=database.db");
         connection.Open(); 
 
-        Console.WriteLine("New computer");
+        Console.WriteLine("Computer New");
         int id = Convert.ToInt32(args[2]);
         string ram = args[3];
         string processador = args[4];
@@ -39,9 +38,17 @@ if(modelName == "Computer")
     
     if(modelAction == "Show")
     {
-       int id = Convert.ToInt32(args[2]);
-       var computer = computerRepository.GetById(id);
-        Console.WriteLine("{0}, {1}, {2}", computer.Id, computer.Ram, computer.Processador);
+        int id = Convert.ToInt32(args[2]);
+        if (computerRepository.existsById(id))
+        {
+            var computer = computerRepository.GetById(id);
+            Console.WriteLine("{0}, {1}, {2}", computer.Id, computer.Ram, computer.Processador);
+        } 
+        else
+        {
+            Console.WriteLine($"Computer com id {id} não existe");
+        }
+       
     }
 
     if(modelAction == "Delete")
@@ -63,11 +70,6 @@ if(modelName == "Computer")
 
 if(modelName == "Lab")
 {
-    if(modelAction == "List")
-    {
-        
-    }
-
     if(modelAction == "New")
     {
         var connection = new SqliteConnection("Data Source=database.db");
@@ -77,10 +79,10 @@ if(modelName == "Lab")
         int id = Convert.ToInt32(args[2]);
         string num = args[3];
         string nome = args[4];
-        string bloco = args[5];
+        string bloco =args[5];
          
         var command = connection.CreateCommand();
-        command.CommandText = "INSERT INTO Lab VALUES($id, $num,  $nome, $bloco);";
+        command.CommandText ="INSERT INTO Lab VALUES($id, $num,  $nome, $bloco);";
         command.Parameters.AddWithValue("$id", id);
         command.Parameters.AddWithValue("$num", num);
         command.Parameters.AddWithValue("$nome", nome);
@@ -89,4 +91,5 @@ if(modelName == "Lab")
         command.ExecuteNonQuery();
         connection.Close();
     }
+
 }

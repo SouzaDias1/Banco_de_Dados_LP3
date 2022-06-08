@@ -11,6 +11,7 @@ class DatabaseSetup
         this.databaseConfig=databaseConfig;
         CreateComputerTable();
     }
+    
     public void CreateComputerTable()
     {
         var connection = new SqliteConnection(databaseConfig.ConnectionString);
@@ -23,8 +24,8 @@ class DatabaseSetup
                 processador varchar(100) not null
             );
         ";
-        command.ExecuteNonQuery();
 
+        command.ExecuteNonQuery();
         connection.Close();
     }
 }
