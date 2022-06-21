@@ -3,6 +3,8 @@ using LabManager.Models;
 using LabManager.Repositories;
 using Microsoft.Data.Sqlite;
 
+
+
 var databaseConfig = new DatabaseConfig();
 var DatabaseSetup= new DatabaseSetup(databaseConfig);
 
@@ -24,22 +26,26 @@ if(modelName == "Computer")
 
     if(modelAction == "New")
     {
-        var connection = new SqliteConnection("Data Source=database.db");
-        connection.Open(); 
-
-        Console.WriteLine("Computer New");
         int id = Convert.ToInt32(args[2]);
         string ram = args[3];
         string processador = args[4];
 
-        var computer = new Computer(id,ram,processador);
-        computerRepository.Save(computer);
+        if (computerRepository.existsById(id))
+        {
+            Console.WriteLine($"Computer com id {id} ja esta cadastrado"); 
+        }
+        else
+        {
+            Console.WriteLine("New computer");
+            var computer = new Computer(id, ram, processador);
+            computerRepository.Save(computer);
+        }
     }
     
     if(modelAction == "Show")
     {
         int id = Convert.ToInt32(args[2]);
-        if (computerRepository.existsById(id))
+        if (computerRepository.existsById(id) == true)
         {
             var computer = computerRepository.GetById(id);
             Console.WriteLine("{0}, {1}, {2}", computer.Id, computer.Ram, computer.Processador);
@@ -54,7 +60,14 @@ if(modelName == "Computer")
     if(modelAction == "Delete")
     {
        int id = Convert.ToInt32(args[2]);
-       computerRepository.Delete(id);
+       if (computerRepository.existsById(id) == true)
+       {
+           computerRepository.Delete(id);
+       }
+       else
+       {
+            Console.WriteLine($"Computer com id {id} não existe");
+       }
     }
 
     if(modelAction == "Update")
@@ -62,14 +75,26 @@ if(modelName == "Computer")
         int id = Convert.ToInt32(args[2]);
         string ram = args[3];
         string processador = args[4];
-
-        var computer = new Computer(id, ram, processador);
-        computerRepository.Update(computer);   
+         
+       if (computerRepository.existsById(id) == true)
+       {
+            var computer = new Computer(id, ram, processador);
+            computerRepository.Update(computer); 
+       }
+       else
+       {
+            Console.WriteLine($"Computer com id {id} não existe");
+       }  
     }
 }
 
 if(modelName == "Lab")
 {
+    if(modelAction == "List")
+    {
+        
+    }
+
     if(modelAction == "New")
     {
         var connection = new SqliteConnection("Data Source=database.db");
@@ -79,10 +104,10 @@ if(modelName == "Lab")
         int id = Convert.ToInt32(args[2]);
         string num = args[3];
         string nome = args[4];
-        string bloco =args[5];
+        string bloco = args[5];
          
         var command = connection.CreateCommand();
-        command.CommandText ="INSERT INTO Lab VALUES($id, $num,  $nome, $bloco);";
+        command.CommandText = "INSERT INTO Lab VALUES($id, $num,  $nome, $bloco);";
         command.Parameters.AddWithValue("$id", id);
         command.Parameters.AddWithValue("$num", num);
         command.Parameters.AddWithValue("$nome", nome);
@@ -91,5 +116,4 @@ if(modelName == "Lab")
         command.ExecuteNonQuery();
         connection.Close();
     }
-
 }
